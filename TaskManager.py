@@ -1,6 +1,6 @@
 import EasyGui
 
-tasks = {
+tasks = { #Dictionaries
     "T1": {
         "Title": "Design Homepage",
         "Description": "Create a Mockup of the Homepage",
