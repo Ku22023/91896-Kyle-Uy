@@ -1,4 +1,4 @@
-import EasyGui
+import easygui
 
 tasks = { #Dictionaries
     "T1": {
@@ -56,3 +56,73 @@ team_members = {
     },
 }
 
+categories = ["Title", "Description", "Priority"]
+
+def integer_validation(input_value, min_value, max_value):
+    if type(input_value) == int:
+        if input_value <= min_value:
+            return f"Please Choose a number between {min_value} and {max_value}!"
+        elif input_value >= max_value:
+            return f"Please Choose a number between {min_value} and {max_value}!"
+        else:
+            return True
+    return f"Please input a number!"
+
+
+
+def update_task():
+    pass
+
+def search_selection():
+    pass
+
+def search_tasks():
+    pass
+
+def search_members():
+    pass
+
+def generate_report():
+    pass
+
+def output_tasks():
+    pass
+
+
+def create_new_task(categories):
+    easygui.msgbox("You are now adding a New Task.", "New Task")
+    new_task = {}
+    for field in categories:
+        if field.lower() in ["Priority"]:
+            value = integer_validation()
+            if value != True:
+                easygui.msgbox(f"{value}", "Error")
+            else:
+                pass
+
+def user_menu(tasks, team_members):
+    options = {
+        "Add a New Task": create_new_task,
+        "Update a Task": update_task,
+        "Search for a Task or Team Member": search_selection,
+        "Generate a Report": generate_report,
+        "Show all Tasks": output_tasks,
+        "Exit": exit,
+    }
+    get_input = None
+    while get_input != "Exit":
+        msg = "Welcome to the Task Manager! Please choose your option."
+        title = "Task Manager - Home"
+        choices = []
+        for action in options:
+            choices.append(action)
+        
+        selection = easygui.buttonbox(msg,title,choices)
+        if selection is None:
+            selection = "Exit"
+        
+        get_input = options[selection]()
+        
+#user_menu(tasks, team_members)
+input
+integer_validation()
