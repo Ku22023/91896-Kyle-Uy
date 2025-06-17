@@ -56,17 +56,18 @@ team_members = {
     },
 }
 
-categories = ["Title", "Description", "Priority"]
+task_tags = ["Title", "Description", "Priority"]
 
 def integer_validation(input_value, min_value, max_value):
     if type(input_value) == int:
-        if input_value <= min_value:
-            return f"Please Choose a number between {min_value} and {max_value}!"
-        elif input_value >= max_value:
+        if input_value <= min_value -1:
+            return (f"Please Choose a number between {min_value} and {max_value}!")
+        elif input_value >= max_value +1:
             return f"Please Choose a number between {min_value} and {max_value}!"
         else:
             return True
-    return f"Please input a number!"
+    else:
+        return "Please input a number!"
 
 
 
@@ -88,17 +89,20 @@ def generate_report():
 def output_tasks():
     pass
 
+def input_values(task_tags):
 
-def create_new_task(categories):
-    easygui.msgbox("You are now adding a New Task.", "New Task")
+def create_new_task(task_tags):
+    task_values = []
     new_task = {}
-    for field in categories:
+    easygui.msgbox("You are now adding a New Task.", "New Task")
+    input_values()
+    for field in task_tags:
         if field.lower() in ["Priority"]:
             value = integer_validation()
             if value != True:
                 easygui.msgbox(f"{value}", "Error")
             else:
-                pass
+                easygui.msgbox("Your input is valid")
 
 def user_menu(tasks, team_members):
     options = {
@@ -123,6 +127,4 @@ def user_menu(tasks, team_members):
         
         get_input = options[selection]()
         
-#user_menu(tasks, team_members)
-input
-integer_validation()
+user_menu(tasks, team_members)
