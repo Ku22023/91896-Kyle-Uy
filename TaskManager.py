@@ -89,13 +89,21 @@ def generate_report():
 def output_tasks():
     pass
 
-def input_values(task_tags):
+def check_multiple_user_values(values_to_enter, user_input_values):
+    if user_input_values != None:
+        #work further
 
-def create_new_task(task_tags):
+def input_multiple_values(values_to_enter, title):
+    box_msg = f"Please input the info to {title}"
+    box_title = title
+    user_input_values = easygui.multenterbox(box_msg,box_title,values_to_enter)
+    check_multiple_user_values(values_to_enter, user_input_values)
+
+
+def create_new_task():
     task_values = []
     new_task = {}
-    easygui.msgbox("You are now adding a New Task.", "New Task")
-    input_values()
+    input_multiple_values(values_to_enter=task_tags, title="Create a New Task")
     for field in task_tags:
         if field.lower() in ["Priority"]:
             value = integer_validation()
@@ -115,13 +123,13 @@ def user_menu(tasks, team_members):
     }
     get_input = None
     while get_input != "Exit":
-        msg = "Welcome to the Task Manager! Please choose your option."
-        title = "Task Manager - Home"
+        box_msg = "Welcome to the Task Manager! Please choose your option."
+        box_title = "Task Manager - Home"
         choices = []
         for action in options:
             choices.append(action)
         
-        selection = easygui.buttonbox(msg,title,choices)
+        selection = easygui.buttonbox(box_msg,box_title,choices)
         if selection is None:
             selection = "Exit"
         
