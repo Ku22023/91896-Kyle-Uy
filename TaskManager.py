@@ -89,16 +89,25 @@ def generate_report():
 def output_tasks():
     pass
 
-def check_multiple_user_values(values_to_enter, user_input_values):
+def check_multiple_user_values(user_input_values):
     if user_input_values != None:
-        #work further
+        for singular_value in user_input_values:
+            if singular_value == "":
+                easygui.msgbox("Error! You need to fill in all values!")
+                return False
+        return True
+    return "empty"
 
 def input_multiple_values(values_to_enter, title):
     box_msg = f"Please input the info to {title}"
     box_title = title
     user_input_values = easygui.multenterbox(box_msg,box_title,values_to_enter)
-    check_multiple_user_values(values_to_enter, user_input_values)
-
+    checked_values = check_multiple_user_values(user_input_values)
+    print(checked_values)
+    if checked_values != True or checked_values != "empty":
+        print("Huh")
+    elif checked_values == "empty" or checked_values == True:
+        return True
 
 def create_new_task():
     task_values = []
