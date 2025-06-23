@@ -56,18 +56,20 @@ team_members = {
     },
 }
 
-task_tags = ["Title", "Description", "Priority"]
+task_tags = ["Title", "Description", "Assignee", "Priority"]
 
 def integer_validation(input_value, min_value, max_value):
-    if type(input_value) == int:
+    try:
+        input_value = int(input_value)
         if input_value <= min_value -1:
             return (f"Please Choose a number between {min_value} and {max_value}!")
         elif input_value >= max_value +1:
             return f"Please Choose a number between {min_value} and {max_value}!"
         else:
             return True
-    else:
+    except:
         return "Please input a number!"
+
 
 
 
@@ -89,37 +91,54 @@ def generate_report():
 def output_tasks():
     pass
 
+def generate_task_id():
+    number_of_tasks = len(tasks)
+    task_id = f"T{number_of_tasks}"
+    return task_id
+
 def check_multiple_user_values(user_input_values):
     if user_input_values != None:
         for singular_value in user_input_values:
             if singular_value == "":
                 easygui.msgbox("Error! You need to fill in all values!")
-                return False
+                create_new_task()
+                return
         return True
-    return "empty"
+    else:
+        easygui.msgbox("No Values input. Returning to homepage.")
 
 def input_multiple_values(values_to_enter, title):
     box_msg = f"Please input the info to {title}"
     box_title = title
     user_input_values = easygui.multenterbox(box_msg,box_title,values_to_enter)
     checked_values = check_multiple_user_values(user_input_values)
-    print(checked_values)
-    if checked_values != True or checked_values != "empty":
-        print("Huh")
-    elif checked_values == "empty" or checked_values == True:
-        return True
+    if checked_values == False:
+        check_multiple_user_values()
+    elif checked_values == True:
+        return user_input_values
 
 def create_new_task():
-    task_values = []
-    new_task = {}
-    input_multiple_values(values_to_enter=task_tags, title="Create a New Task")
-    for field in task_tags:
-        if field.lower() in ["Priority"]:
-            value = integer_validation()
+    min_value = 1
+    max_value = 3
+    user_input = input_multiple_values(values_to_enter=task_tags, title="Create a New Task")
+    print(user_input)
+    new_task = {
+        "Title": user_input[0],
+        "Description": user_input[1],
+        "Assignee": user_input[2],
+        "Priority": user_input[3],
+        "Status": "Not Started"
+    }
+    for field in new_task:
+        if field == "Priority":
+            value = integer_validation(user_input[3], min_value,max_value)
             if value != True:
                 easygui.msgbox(f"{value}", "Error")
             else:
-                easygui.msgbox("Your input is valid")
+                task_id = generate_task_id()
+                tasks[task_id] = new_task
+                print(tasks)
+
 
 def user_menu(tasks, team_members):
     options = {
