@@ -96,7 +96,7 @@ def generate_task_id():
     task_id = f"T{number_of_tasks}"
     return task_id
 
-def check_multiple_user_values(user_input_values):
+def check_multiple_input_values(user_input_values):
     if user_input_values != None:
         for singular_value in user_input_values:
             if singular_value == "":
@@ -111,10 +111,8 @@ def input_multiple_values(values_to_enter, title):
     box_msg = f"Please input the info to {title}"
     box_title = title
     user_input_values = easygui.multenterbox(box_msg,box_title,values_to_enter)
-    checked_values = check_multiple_user_values(user_input_values)
-    if checked_values == False:
-        check_multiple_user_values()
-    elif checked_values == True:
+    checked_values = check_multiple_input_values(user_input_values)
+    if checked_values == True:
         return user_input_values
 
 def create_new_task():
