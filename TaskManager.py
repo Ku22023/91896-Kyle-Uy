@@ -1,6 +1,6 @@
 import easygui
 
-tasks = { #Dictionaries
+task_list = { #Dictionaries
     "T1": {
         "Title": "Design Homepage",
         "Description": "Create a Mockup of the Homepage",
@@ -58,11 +58,13 @@ team_members = {
 
 task_tags = ["Title", "Description", "Assignee", "Priority"]
 
+#Validation.
+
 def integer_validation(input_value, min_value, max_value):
     try:
         input_value = int(input_value)
         if input_value <= min_value -1:
-            return (f"Please Choose a number between {min_value} and {max_value}!")
+            return f"Please Choose a number between {min_value} and {max_value}!"
         elif input_value >= max_value +1:
             return f"Please Choose a number between {min_value} and {max_value}!"
         else:
@@ -70,20 +72,40 @@ def integer_validation(input_value, min_value, max_value):
     except:
         return "Please input a number!"
 
-
-
-
-def update_task():
-    pass
+#Functions used for searching both tasks and users.
 
 def search_selection():
-    pass
+    options = {
+        "Search for a Team Member": search_members,
+        "Search for a Task": search_tasks,
+        "Cancel": exit,
+    }
+    box_msg = "Please select what you would like to search!"
+    box_title = "Task Manager - Search"
+    choices = []
+    for action in options:
+        choices.append(action)
 
+    selection = easygui.buttonbox(box_msg,box_title,choices)
+    if selection is None or selection is "Cancel":
+        return    
+    options[selection]()
+    
 def search_tasks():
-    pass
+    choices = []
+    for key in task_list:
+        if key == "Title":
+            choices.append(task_list, key)
+    box_msg = "What task would you like to view?"
+    box_title = "Task Manager - Search"
+    choice = easygui.choicebox(box_msg, box_title, choices)
+    return
 
 def search_members():
-    pass
+    print("Yo")
+    return
+
+#Functions for.
 
 def generate_report():
     pass
@@ -91,18 +113,29 @@ def generate_report():
 def output_tasks():
     pass
 
+
+#Functions used for updating Tasks.
+
+def update_task():
+    pass
+
+
+
+
+#Functions used for adding Tasks.
+
 def generate_task_id():
-    number_of_tasks = len(tasks) + 1
+    number_of_tasks = len(task_list) + 1
     task_id = f"T{number_of_tasks}"
     return task_id
 
 def check_multiple_input_values(user_input):
-    title = "Error"
-    message = "Error! You need to fill in all values!"
+    box_title = "Error"
+    box_message = "Error! You need to fill in all values!"
     if user_input != None:
         for singular_value in user_input:
             if singular_value == "":
-                easygui.msgbox(message, title)
+                easygui.msgbox(box_message, box_title)
                 create_new_task()
                 return
         return True
@@ -120,7 +153,7 @@ def input_multiple_values(values_to_enter, title):
 def create_new_task():
     min_value = 1
     max_value = 3
-    user_input = input_multiple_values(values_to_enter=task_tags, title="Create a New Task")
+    user_input = input_multiple_values(values_to_enter=task_tags, title="Task Manager - Create a New Task")
     if user_input == None:
         return
     else:
@@ -139,11 +172,11 @@ def create_new_task():
                     create_new_task()
                 else:
                     task_id = generate_task_id()
-                    tasks[task_id] = new_task
-                    print(tasks)
+                    task_list[task_id] = new_task
+                    print(task_list)
 
 
-def user_menu(tasks, team_members):
+def user_menu():
     options = {
         "Add a New Task": create_new_task,
         "Update a Task": update_task,
@@ -166,4 +199,4 @@ def user_menu(tasks, team_members):
         
         get_input = options[selection]()
         
-user_menu(tasks, team_members)
+user_menu()
