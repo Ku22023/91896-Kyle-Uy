@@ -87,24 +87,47 @@ def search_selection():
         choices.append(action)
 
     selection = easygui.buttonbox(box_msg,box_title,choices)
-    if selection is None or selection is "Cancel":
+    if selection == None or selection == "Cancel":
         return    
     options[selection]()
-    
+
 def search_tasks():
     choices = []
-    for key in task_list:
-        if key == "Title":
-            choices.append(task_list, key)
+    for task_id in task_list:
+        for key in task_list[task_id]:
+            if key == "Title":
+                choices.append(f"{task_id}. {task_list[task_id]['Title']}")
     box_msg = "What task would you like to view?"
     box_title = "Task Manager - Search"
     choice = easygui.choicebox(box_msg, box_title, choices)
-    return
+    #Link to output function
 
 def search_members():
-    print("Yo")
-    return
+    user_input = search_members_input()
+    member_exists = search_members_dictionary(user_input)
+    if member_exists == True:
+        easygui.msgbox("No asdasdError: Member does exist!")
+    else:
+        easygui.msgbox("Error: Member does not exist!")
 
+            
+def search_members_dictionary(user_input):
+    for member_id in team_members:
+        if member_id == user_input:
+            return True
+        else:
+            for member_value in team_members[member_id]:
+                if member_value == "Name":
+                    if team_members[member_id][member_value] == user_input:
+                        print(team_members[member_id][member_value])
+                        return True #add LOWER
+
+def search_members_input():
+    box_title = "Task Manager - Search"
+    box_msg = "Enter the team member's name or ID."
+    user_input = easygui.enterbox(box_msg, box_title)
+    return user_input
+    
 #Functions for.
 
 def generate_report():
