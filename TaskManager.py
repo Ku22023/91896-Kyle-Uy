@@ -60,17 +60,40 @@ task_tags = ["Title", "Description", "Assignee", "Priority"]
 
 #Validation.
 
-def integer_validation(input_value, min_value, max_value):
+def string_validation(user_input):
+    box_title = "Error"
+    box_message = "Error! You need to fill in all values!"
+    if type(user_input) == list:
+        if user_input != None:
+            for singular_value in user_input:
+                if singular_value == "":
+                    easygui.msgbox(box_message, box_title)
+                    return "missing"
+            return True
+        else:
+            easygui.msgbox("No Values input. Returning to homepage.")
+    else:
+        if user_input == None or len(user_input) == 0:
+            easygui.msgbox("No Values input. Returning to homepage.")
+            return
+        else:
+            return True
+
+
+def integer_validation(user_input, min_value, max_value):
     try:
-        input_value = int(input_value)
-        if input_value <= min_value -1:
+        user_input = int(user_input)
+        if user_input <= min_value -1:
             return f"Please Choose a number between {min_value} and {max_value}!"
-        elif input_value >= max_value +1:
+        elif user_input >= max_value +1:
             return f"Please Choose a number between {min_value} and {max_value}!"
         else:
             return True
     except:
         return "Please input a number!"
+
+
+
 
 #Functions used for searching both tasks and users.
 
@@ -100,15 +123,19 @@ def search_tasks():
     box_msg = "What task would you like to view?"
     box_title = "Task Manager - Search"
     choice = easygui.choicebox(box_msg, box_title, choices)
+    print(choice)
     #Link to output function
 
 def search_members():
     user_input = search_members_input()
-    member_exists = search_members_dictionary(user_input)
-    if member_exists == True:
-        easygui.msgbox(f"User found! {user_input}")
+    if user_input == "homepage":
+        return
     else:
-        easygui.msgbox("Error: Member does not exist!")
+        member_exists = search_members_dictionary(user_input)
+        if member_exists == True:
+            easygui.msgbox(f"User found! {user_input}")
+        else:
+            easygui.msgbox("Error: Member does not exist!")
 
             
 def search_members_dictionary(user_input):
@@ -120,13 +147,18 @@ def search_members_dictionary(user_input):
                 if member_value == "Name":
                     if team_members[member_id][member_value].lower() == user_input.lower():
                         print(team_members[member_id][member_value])
-                        return True
+                        return True #output from here
 
 def search_members_input():
     box_title = "Task Manager - Search"
     box_msg = "Enter the team member's name or ID."
     user_input = easygui.enterbox(box_msg, box_title)
-    return user_input
+    validation = string_validation(user_input)
+    if validation == True:
+        return user_input
+    else:
+        return "homepage"
+
     
 #Functions for outputting.
 
@@ -152,26 +184,17 @@ def generate_task_id():
     task_id = f"T{number_of_tasks}"
     return task_id
 
-def check_multiple_input_values(user_input):
-    box_title = "Error"
-    box_message = "Error! You need to fill in all values!"
-    if user_input != None:
-        for singular_value in user_input:
-            if singular_value == "":
-                easygui.msgbox(box_message, box_title)
-                create_new_task()
-                return
-        return True
-    else:
-        easygui.msgbox("No Values input. Returning to homepage.")
+
 
 def input_multiple_values(values_to_enter, title):
     box_msg = f"Please input the info to {title}"
     box_title = title
     user_input = easygui.multenterbox(box_msg,box_title,values_to_enter)
-    checked_values = check_multiple_input_values(user_input)
+    checked_values = string_validation(user_input)
     if checked_values == True:
         return user_input
+    elif checked_values == "missing":
+        create_new_task()
 
 def create_new_task():
     min_value = 1
