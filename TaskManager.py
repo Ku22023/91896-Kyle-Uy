@@ -106,21 +106,21 @@ def search_members():
     user_input = search_members_input()
     member_exists = search_members_dictionary(user_input)
     if member_exists == True:
-        easygui.msgbox("No asdasdError: Member does exist!")
+        easygui.msgbox(f"User found! {user_input}")
     else:
         easygui.msgbox("Error: Member does not exist!")
 
             
 def search_members_dictionary(user_input):
     for member_id in team_members:
-        if member_id == user_input:
+        if member_id.lower() == user_input.lower():
             return True
         else:
             for member_value in team_members[member_id]:
                 if member_value == "Name":
-                    if team_members[member_id][member_value] == user_input:
+                    if team_members[member_id][member_value].lower() == user_input.lower():
                         print(team_members[member_id][member_value])
-                        return True #add LOWER
+                        return True
 
 def search_members_input():
     box_title = "Task Manager - Search"
@@ -128,7 +128,7 @@ def search_members_input():
     user_input = easygui.enterbox(box_msg, box_title)
     return user_input
     
-#Functions for.
+#Functions for outputting.
 
 def generate_report():
     pass
