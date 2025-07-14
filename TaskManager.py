@@ -65,10 +65,17 @@ def string_validation(user_input):
     box_message = "Error! You need to fill in all values!"
     if type(user_input) == list:
         if user_input != None:
+            user_input_iteration = 0
             for singular_value in user_input:
-                if singular_value == "":
+                user_input_iteration += 1
+                if user_input_iteration == 3:
+                    if singular_value == "":
+                        user_input[2] = "None"
+                    else:
+                        continue
+                if singular_value == "" and user_input_iteration != 3:
                     easygui.msgbox(box_message, box_title)
-                    return "missing"
+                    return "missing" #asignee can be none
             return True
         else:
             easygui.msgbox("No Values input. Returning to homepage.")
@@ -81,6 +88,7 @@ def string_validation(user_input):
 
 
 def integer_validation(user_input, min_value, max_value):
+    
     try:
         user_input = int(user_input)
         if user_input <= min_value -1:
@@ -165,8 +173,18 @@ def search_members_input():
 def generate_report():
     pass
 
-def output_tasks():
+def output_task():
     pass
+
+def output_all_tasks():
+    box_msg = []
+    for task_id in task_list:
+        for key in task_list[task_id]:
+            if key == "Title":
+                box_msg.append(f"{task_id}. {task_list[task_id]['Title']}\n")
+    box_title = "Task Manager - All Output Tasks"
+    easygui.msgbox(box_msg, box_title)
+
 
 
 #Functions used for updating Tasks.
@@ -228,7 +246,7 @@ def user_menu():
         "Update a Task": update_task,
         "Search for a Task or Team Member": search_selection,
         "Generate a Report": generate_report,
-        "Show all Tasks": output_tasks,
+        "Show all Tasks": output_all_tasks,
         "Exit": exit,
     }
     get_input = None
