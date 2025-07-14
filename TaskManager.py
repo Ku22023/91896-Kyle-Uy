@@ -177,14 +177,13 @@ def output_task():
     pass
 
 def output_all_tasks():
-    box_msg = []
-    for task_id in task_list:
-        for key in task_list[task_id]:
-            if key == "Title":
-                box_msg.append(f"{task_id}. {task_list[task_id]['Title']}\n")
-    box_title = "Task Manager - All Output Tasks"
-    easygui.msgbox(box_msg, box_title)
-
+    output = []
+    for task_id, tasks in task_list.items():
+        output.append(f"--- {tasks['Title']} ---")
+        for key, value in task_list:
+            output.append(f"{key}: {value}")
+        output.append("")
+    easygui.msgbox("\n".join(output), title="All Tasks")
 
 
 #Functions used for updating Tasks.
