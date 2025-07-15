@@ -100,9 +100,6 @@ def integer_validation(user_input, min_value, max_value):
     except:
         return "Please input a number!"
 
-
-
-
 #Functions used for searching both tasks and users.
 
 def search_selection():
@@ -128,11 +125,11 @@ def search_tasks():
         for key in task_list[task_id]:
             if key == "Title":
                 choices.append(f"{task_id}. {task_list[task_id]['Title']}")
-    box_msg = "What task would you like to view?"
+    box_msg = "What task would you like to view or update?"
     box_title = "Task Manager - Search"
     choice = easygui.choicebox(box_msg, box_title, choices)
-    print(choice)
-    #Link to output function
+    task_id = choice.split(".")
+    output_task(task_id[0])
 
 def search_members():
     user_input = search_members_input()
@@ -141,7 +138,8 @@ def search_members():
     else:
         member_exists = search_members_dictionary(user_input)
         if member_exists == True:
-            easygui.msgbox(f"User found! {user_input}")
+            user_id = user_input
+            output_user(user_id)
         else:
             easygui.msgbox("Error: Member does not exist!")
 
@@ -155,7 +153,7 @@ def search_members_dictionary(user_input):
                 if member_value == "Name":
                     if team_members[member_id][member_value].lower() == user_input.lower():
                         print(team_members[member_id][member_value])
-                        return True #output from here
+                        return True
 
 def search_members_input():
     box_title = "Task Manager - Search"
@@ -173,26 +171,52 @@ def search_members_input():
 def generate_report():
     pass
 
-def output_task():
-    pass
+def output_user(user_id):
+    output = [f"--- {user_id}. {team_members[user_id]['Name']} ---"]
+    for key, value in team_members[user_id].items():
+        if key == 'Assigned Tasks':
+            output.append("Assigned Tasks:")
+            for assigned_task in value:
+                output.append(f"- {assigned_task}. {task_list[assigned_task]['Title']}")
+        else:
+            output.append(f"{key}: {value}")
+    easygui.msgbox("\n".join(output), title=team_members[user_id]["Name"])
+    
+
+def output_task(task_id):
+    choices=["Edit Task", "Exit"]
+    output = [f"--- {task_id}. {task_list[task_id]['Title']} ---"]
+    for key, value in task_list[task_id].items():
+        output.append(f"{key}: {value}")
+    user_input = easygui.buttonbox("\n".join(output), title=task_list[task_id]["Title"], choices=choices)
+    if user_input == "Edit Task":
+        update_task(task_id)
 
 def output_all_tasks():
     output = []
-    for task_id, tasks in task_list.items():
-        output.append(f"--- {tasks['Title']} ---")
-        for key, value in task_list:
-            output.append(f"{key}: {value}")
+    for task_id, task in task_list.items():
+        output.append(f"--- {task_id}. {task['Title']} ---")
+        for key, value in task.items():
+            if key != "Title":
+                output.append(f"{key}: {value}")
         output.append("")
     easygui.msgbox("\n".join(output), title="All Tasks")
 
 
 #Functions used for updating Tasks.
 
-def update_task():
+def update_task(task_id):
     pass
-
-
-
+#    task = task_list[task_id]
+#    editable_fields = [field for field in task_tags]
+#    box_msg = "Which Field would you like to edit?"
+#    box_title = "Task Manager - Edit Task"
+#    field_to_edit = easygui.buttonbox(box_msg, box_title, editable_fields)
+#
+#    if not field_to_edit:
+#        easygui.msgbox("No Field Selected. Edit Cancelled.")
+#        return
+#    if field_to_edit in ["Priority"]
 
 #Functions used for adding Tasks.
 
@@ -242,7 +266,7 @@ def create_new_task():
 def user_menu():
     options = {
         "Add a New Task": create_new_task,
-        "Update a Task": update_task,
+        "Update a Task": search_tasks,
         "Search for a Task or Team Member": search_selection,
         "Generate a Report": generate_report,
         "Show all Tasks": output_all_tasks,
