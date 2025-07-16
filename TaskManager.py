@@ -56,7 +56,7 @@ team_members = {
     },
 }
 
-task_tags = ["Title", "Description", "Assignee", "Priority"]
+task_tags = ["Title", "Description", "Priority"]
 
 #Validation.
 
@@ -67,15 +67,9 @@ def string_validation(user_input):
         if user_input != None:
             user_input_iteration = 0
             for singular_value in user_input:
-                user_input_iteration += 1
-                if user_input_iteration == 3:
-                    if singular_value == "":
-                        user_input[2] = "None"
-                    else:
-                        continue
-                if singular_value == "" and user_input_iteration != 3:
+                if singular_value == "":
                     easygui.msgbox(box_message, box_title)
-                    return "missing" #asignee can be none
+                    return "missing"
             return True
         else:
             easygui.msgbox("No Values input. Returning to homepage.")
@@ -88,7 +82,6 @@ def string_validation(user_input):
 
 
 def integer_validation(user_input, min_value, max_value):
-    
     try:
         user_input = int(user_input)
         if user_input <= min_value -1:
@@ -128,7 +121,10 @@ def search_tasks():
     box_msg = "What task would you like to view or update?"
     box_title = "Task Manager - Search"
     choice = easygui.choicebox(box_msg, box_title, choices)
-    task_id = choice.split(".")
+    if choice != None:
+        task_id = choice.split(".")
+    else:
+        return
     output_task(task_id[0])
 
 def search_members():
@@ -182,15 +178,29 @@ def output_user(user_id):
             output.append(f"{key}: {value}")
     easygui.msgbox("\n".join(output), title=team_members[user_id]["Name"])
     
-
 def output_task(task_id):
-    choices=["Edit Task", "Exit"]
+    
+    options = {
+        "Assign Task to a User": assign_task_selector,
+        "Edit Task": update_task, 
+        "Cancel": exit
+    }
     output = [f"--- {task_id}. {task_list[task_id]['Title']} ---"]
     for key, value in task_list[task_id].items():
         output.append(f"{key}: {value}")
-    user_input = easygui.buttonbox("\n".join(output), title=task_list[task_id]["Title"], choices=choices)
-    if user_input == "Edit Task":
-        update_task(task_id)
+
+    choices = []
+    for action in options:
+        choices.append(action)
+
+    selection = easygui.buttonbox("\n".join(output), title=task_list[task_id]["Title"], choices=choices)
+    if selection == None or selection == "Cancel":
+        return
+    elif selection == "Assign Task to a User":
+        assign_task_selector(task_id)
+    else:    
+        options[selection]()
+
 
 def output_all_tasks():
     output = []
@@ -207,16 +217,53 @@ def output_all_tasks():
 
 def update_task(task_id):
     pass
-#    task = task_list[task_id]
-#    editable_fields = [field for field in task_tags]
-#    box_msg = "Which Field would you like to edit?"
-#    box_title = "Task Manager - Edit Task"
-#    field_to_edit = easygui.buttonbox(box_msg, box_title, editable_fields)
-#
-#    if not field_to_edit:
-#        easygui.msgbox("No Field Selected. Edit Cancelled.")
-#        return
-#    if field_to_edit in ["Priority"]
+    task = task_list[task_id]
+    editable_fields = [field for field in task_tags]
+    box_msg = "Which Field would you like to edit?"
+    box_title = "Task Manager - Edit Task"
+    field_to_edit = easygui.buttonbox(box_msg, box_title, editable_fields)
+
+    if not field_to_edit:
+        easygui.msgbox("No Field Selected. Edit Cancelled.")
+        return
+    if field_to_edit in ["Priority"]:
+        pass
+
+def assign_task_selector(task_id):
+    box_msg = f"What member would you like to assign: \n{task_id}. {task_list[task_id]['Title']}"
+    box_title = "Task Manager - Assigning a Task"
+    choices = []
+    for member_id in team_members:
+        for key in team_members[member_id]:
+            if key == "Name":
+                choices.append(f"{member_id}. {team_members[member_id]['Name']}")
+    choice = easygui.choicebox(box_msg, box_title, choices)
+    if choice != None:
+        user_id = choice.split(".")
+    else:
+        return
+    check_if_user_already_has_task(user_id[0], task_id)
+
+def check_if_user_already_has_task(user_id, task_id):
+    loop_iteration = 0
+    for assigned_task in team_members[user_id]['Assigned Tasks']:
+        loop_iteration += 1
+        if loop_iteration != len(team_members[user_id]['Assigned Tasks']):
+            if task_id == assigned_task:
+                box_title = "Task Manager - Error"
+                box_msg = f"Error: User '{team_members[user_id]['Name']}' already has task '{task_list[task_id]['Title']}' assigned to them!"
+                easygui.msgbox(box_msg, box_title)
+                return
+            else:
+                loop_iteration += 1
+
+    if loop_iteration == len(team_members[user_id]['Assigned Tasks']):
+        assign_task(task_id, user_id)
+
+def assign_task(task_id, user_id):
+    team_members[user_id]['Assigned Tasks'].append(task_id)
+    print(team_members[user_id]['Assigned Tasks'])
+    return
 
 #Functions used for adding Tasks.
 
@@ -247,13 +294,13 @@ def create_new_task():
         new_task = {
             "Title": user_input[0],
             "Description": user_input[1],
-            "Assignee": user_input[2],
-            "Priority": user_input[3],
+            "Assignee": "None",
+            "Priority": user_input[2],
             "Status": "Not Started"
         }
         for field in new_task:
             if field == "Priority":
-                value = integer_validation(user_input[3], min_value,max_value)
+                value = integer_validation(user_input[2], min_value,max_value)
                 if value != True:
                     easygui.msgbox(f"{value}", "Error")
                     create_new_task()
