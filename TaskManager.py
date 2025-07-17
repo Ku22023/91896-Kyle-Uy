@@ -135,10 +135,13 @@ def search_members():
         if member_exists == True:
             user_id = user_input
             output_user(user_id)
+        elif type(member_exists) == str and len(member_exists) == 3:
+            user_id = member_exists
+            output_user(user_id)
         else:
             easygui.msgbox("Error: Member does not exist!")
 
-            
+
 def search_members_dictionary(user_input):
     for member_id in team_members:
         if member_id.lower() == user_input.lower():
@@ -148,7 +151,7 @@ def search_members_dictionary(user_input):
                 if member_value == "Name":
                     if team_members[member_id][member_value].lower() == user_input.lower():
                         print(team_members[member_id][member_value])
-                        return True
+                        return member_id
 
 def search_members_input():
     box_title = "Task Manager - Search"
@@ -211,7 +214,7 @@ def output_all_tasks():
     easygui.msgbox("\n".join(output), title="All Tasks")
 
 
-#Functions used for updating Tasks.
+#Functions used for updating/assigning Tasks.
 
 def update_task(task_id):
     pass
@@ -230,33 +233,41 @@ def update_task(task_id):
 def assign_task_selector(task_id):
     box_msg = f"What member would you like to assign: \n{task_id}. {task_list[task_id]['Title']}"
     box_title = "Task Manager - Assigning a Task"
-    choices = []
+    choices = ["None (Un-assign Task)"]
     for member_id in team_members:
         for key in team_members[member_id]:
             if key == "Name":
                 choices.append(f"{member_id}. {team_members[member_id]['Name']}")
     choice = easygui.choicebox(box_msg, box_title, choices)
-    if choice != None:
+    if choice == "None (Un-assign Task)":
+        unassign_task(task_id)
+    elif choice != None:
         user_id = choice.split(".")
         check_if_task_free(user_id[0], task_id)
     else:
         return
+
+def unassign_task(task_id):
+    member_id = task_list[task_id]['Assignee']
+    for assigned_tasks in team_members[member_id]['Assigned Tasks']:
+        if assigned_tasks == task_id:
+            #continue
+    task_list[task_id]["Assignee"] = "None"
+    box_title = "Task Manager - Success"
+    box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
+    easygui.msgbox(box_msg, box_title)
     
+    output_task(task_id)
+
 def check_if_task_free(user_id, task_id):
     if task_list[task_id]['Assignee'] == "None":
-        print("yo")
         loop_iteration = 0
         for assigned_task in team_members[user_id]['Assigned Tasks']:
-            print(f"{len(team_members[user_id]['Assigned Tasks'])} - Length of list")
             loop_iteration += 1
-            print(f"{loop_iteration} - Loop iterations")
-            print("yo 2")
             if loop_iteration == len(team_members[user_id]['Assigned Tasks']):
-                print("yo 4")
                 assign_task(task_id, user_id)
                 return
     else:
-        print("girt")
         box_msg = f"Error: Task {task_id} {task_list[task_id]['Title']} already has user {task_list[task_id]['Assignee']} assigned to it!"
         box_title = "Task Manager - Error"
         easygui.msgbox(box_msg, box_title)
@@ -264,7 +275,9 @@ def check_if_task_free(user_id, task_id):
 def assign_task(task_id, user_id):
     team_members[user_id]['Assigned Tasks'].append(task_id)
     task_list[task_id]['Assignee'] = user_id
-    print(team_members[user_id]['Assigned Tasks'])
+    box_title = "Task Manager - Success"
+    box_msg = f"Sucessfully assigned Task {task_list[task_id]['Title']} to user {team_members[user_id]['Name']}!"
+    easygui.msgbox(box_msg, box_title)
     return
 
 #Functions used for adding Tasks.
@@ -310,6 +323,10 @@ def create_new_task():
                     task_id = generate_task_id()
                     task_list[task_id] = new_task
                     assign_task_selector(task_id)
+                    box_title = "Task Manager - Create Task" 
+                    box_msg = "Task sucessfully created!"
+                    easygui.msgbox(box_msg, box_title)
+                    output_task(task_id)
 
 
 
