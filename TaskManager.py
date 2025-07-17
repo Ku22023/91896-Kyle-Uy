@@ -56,7 +56,7 @@ team_members = {
     },
 }
 
-task_tags = ["Title", "Description", "Priority"]
+task_tags = ["Title", "Description","Priority"]
 
 #Validation.
 
@@ -65,7 +65,6 @@ def string_validation(user_input):
     box_message = "Error! You need to fill in all values!"
     if type(user_input) == list:
         if user_input != None:
-            user_input_iteration = 0
             for singular_value in user_input:
                 if singular_value == "":
                     easygui.msgbox(box_message, box_title)
@@ -179,7 +178,6 @@ def output_user(user_id):
     easygui.msgbox("\n".join(output), title=team_members[user_id]["Name"])
     
 def output_task(task_id):
-    
     options = {
         "Assign Task to a User": assign_task_selector,
         "Edit Task": update_task, 
@@ -240,28 +238,32 @@ def assign_task_selector(task_id):
     choice = easygui.choicebox(box_msg, box_title, choices)
     if choice != None:
         user_id = choice.split(".")
+        check_if_task_free(user_id[0], task_id)
     else:
         return
-    check_if_user_already_has_task(user_id[0], task_id)
-
-def check_if_user_already_has_task(user_id, task_id):
-    loop_iteration = 0
-    for assigned_task in team_members[user_id]['Assigned Tasks']:
-        loop_iteration += 1
-        if loop_iteration != len(team_members[user_id]['Assigned Tasks']):
-            if task_id == assigned_task:
-                box_title = "Task Manager - Error"
-                box_msg = f"Error: User '{team_members[user_id]['Name']}' already has task '{task_list[task_id]['Title']}' assigned to them!"
-                easygui.msgbox(box_msg, box_title)
+    
+def check_if_task_free(user_id, task_id):
+    if task_list[task_id]['Assignee'] == "None":
+        print("yo")
+        loop_iteration = 0
+        for assigned_task in team_members[user_id]['Assigned Tasks']:
+            print(f"{len(team_members[user_id]['Assigned Tasks'])} - Length of list")
+            loop_iteration += 1
+            print(f"{loop_iteration} - Loop iterations")
+            print("yo 2")
+            if loop_iteration == len(team_members[user_id]['Assigned Tasks']):
+                print("yo 4")
+                assign_task(task_id, user_id)
                 return
-            else:
-                loop_iteration += 1
-
-    if loop_iteration == len(team_members[user_id]['Assigned Tasks']):
-        assign_task(task_id, user_id)
+    else:
+        print("girt")
+        box_msg = f"Error: Task {task_id} {task_list[task_id]['Title']} already has user {task_list[task_id]['Assignee']} assigned to it!"
+        box_title = "Task Manager - Error"
+        easygui.msgbox(box_msg, box_title)
 
 def assign_task(task_id, user_id):
     team_members[user_id]['Assigned Tasks'].append(task_id)
+    task_list[task_id]['Assignee'] = user_id
     print(team_members[user_id]['Assigned Tasks'])
     return
 
@@ -307,7 +309,8 @@ def create_new_task():
                 else:
                     task_id = generate_task_id()
                     task_list[task_id] = new_task
-                    print(task_list)
+                    assign_task_selector(task_id)
+
 
 
 def user_menu():
