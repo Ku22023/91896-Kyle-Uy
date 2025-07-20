@@ -133,7 +133,7 @@ def search_members():
     else:
         member_exists = search_members_dictionary(user_input)
         if member_exists == True:
-            user_id = user_input
+            user_id = user_input.upper()
             output_user(user_id)
         elif type(member_exists) == str and len(member_exists) == 3:
             user_id = member_exists
@@ -150,7 +150,6 @@ def search_members_dictionary(user_input):
             for member_value in team_members[member_id]:
                 if member_value == "Name":
                     if team_members[member_id][member_value].lower() == user_input.lower():
-                        print(team_members[member_id][member_value])
                         return member_id
 
 def search_members_input():
@@ -217,7 +216,6 @@ def output_all_tasks():
 #Functions used for updating/assigning Tasks.
 
 def update_task(task_id):
-    pass
     task = task_list[task_id]
     editable_fields = [field for field in task_tags]
     box_msg = "Which Field would you like to edit?"
@@ -228,7 +226,31 @@ def update_task(task_id):
         easygui.msgbox("No Field Selected. Edit Cancelled.")
         return
     if field_to_edit in ["Priority"]:
-        pass
+        min_value = 1
+        max_value = 3
+        user_input = input_value(field_to_edit)
+        value = integer_validation(user_input, min_value, max_value)
+        if value == True:
+            new_value = user_input
+        else:
+            easygui.msgbox(box_msg=value, box_title="Error")
+    else:
+        user_input = input_value(field_to_edit)
+        value = string_validation(user_input)
+        if value == True:
+            new_value = user_input
+        else:
+            easygui.msgbox(box_msg=value, box_title="Error")
+    task_list[field_to_edit] = new_value
+    easygui.msgbox(f"{field_to_edit} updated sucessfully.", "Edit Complete")
+    output_task(task_id)
+
+
+def input_value(field_to_edit):
+    box_title = "Editing Task"
+    box_msg = f"Enter what you would like to change in {field_to_edit}"
+    user_input = easygui.enterbox(box_msg, box_title)
+    return user_input
 
 def assign_task_selector(task_id):
     box_msg = f"What member would you like to assign: \n{task_id}. {task_list[task_id]['Title']}"
@@ -248,21 +270,25 @@ def assign_task_selector(task_id):
         return
 
 def unassign_task(task_id):
-    member_id = task_list[task_id]['Assignee']
-    for assigned_tasks in team_members[member_id]['Assigned Tasks']:
-        if assigned_tasks == task_id:
-            #continue
-    task_list[task_id]["Assignee"] = "None"
-    box_title = "Task Manager - Success"
-    box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
-    easygui.msgbox(box_msg, box_title)
-    
-    output_task(task_id)
+    if task_list[task_id]['Assignee'] != 'None':
+        member_id = task_list[task_id]['Assignee']
+        for assigned_tasks in team_members[member_id]['Assigned Tasks']:
+            if assigned_tasks == task_id:
+                team_members[member_id]['Assigned Tasks'].remove(task_id)
+        task_list[task_id]["Assignee"] = "None"
+        box_title = "Task Manager - Success"
+        box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
+        easygui.msgbox(box_msg, box_title)
+        output_task(task_id)
+    else:
+        box_msg = f"Error: Task {task_id}: {task_list[task_id]['Title']} already has no-one assigned to it!"
+        box_title = "Task Manager - Error"
+        easygui.msgbox(box_msg, box_title)
 
 def check_if_task_free(user_id, task_id):
     if task_list[task_id]['Assignee'] == "None":
         loop_iteration = 0
-        for assigned_task in team_members[user_id]['Assigned Tasks']:
+        for assigned_tasks in team_members[user_id]['Assigned Tasks']:
             loop_iteration += 1
             if loop_iteration == len(team_members[user_id]['Assigned Tasks']):
                 assign_task(task_id, user_id)
