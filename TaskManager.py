@@ -177,8 +177,23 @@ def search_members_input():
 #Functions for outputting.
 
 def generate_report():
+    status_counts = {
+        "Not Started": 0,
+        "In Progress": 0,
+        "Blocked": 0,
+        "Complete": 0
+    }
     for task_id in task_list:
-        value = task_list[task_id]['Status']
+        status = task_list[task_id]['Status']
+        if status in status_counts:
+            status_counts[status] += 1
+        else:
+            status_counts[status] = 1
+    output = [f"--- Total Project Progress Report: ---"]
+    for key, value in status_counts.items():
+        output.append(f"{key}: {value}")
+    easygui.msgbox("\n".join(output), "hi")
+
         
 def output_user(user_id):
     output = [f"--- {user_id}. {team_members[user_id]['Name']} ---"]
