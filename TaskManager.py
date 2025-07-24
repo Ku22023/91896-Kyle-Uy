@@ -320,7 +320,7 @@ def assign_task_selector(task_id):
         box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
         easygui.msgbox(box_msg, box_title)
         output_task(task_id)
-    elif choice != None or choice != "Cancel":
+    elif choice != None:
         user_id = choice.split(".")
         user_id = user_id[0]
         unassign_task(task_id)
