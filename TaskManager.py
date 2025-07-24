@@ -73,13 +73,8 @@ def string_validation(user_input):
                     easygui.msgbox(box_message, box_title)
                     return "missing"
             return True
-        else:
-            easygui.msgbox("No Values input. Returning to homepage.")
     else:
-        if user_input == None or len(user_input) == 0:
-            easygui.msgbox("No Values input. Returning to homepage.")
-            return
-        else:
+        if user_input != None:
             return True
 
 
