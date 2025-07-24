@@ -331,7 +331,7 @@ def assign_task_selector(task_id):
 
 def unassign_task(task_id):
     member_id = task_list[task_id]['Assignee']
-    if member_id != "None":
+    if member_id == "None":
         for assigned_tasks in team_members[member_id]['Assigned Tasks']:
             if assigned_tasks == task_id:
                 team_members[member_id]['Assigned Tasks'].remove(task_id)
