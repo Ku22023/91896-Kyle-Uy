@@ -177,22 +177,17 @@ def search_members_input():
 #Functions for outputting.
 
 def generate_report():
-    status_counts = {
-        "Not Started": 0,
-        "In Progress": 0,
-        "Blocked": 0,
-        "Complete": 0
-    }
+    status_counts = {}
+    for satus_values in status_options:
+        status_counts[satus_values] = 0
     for task_id in task_list:
         status = task_list[task_id]['Status']
         if status in status_counts:
             status_counts[status] += 1
-        else:
-            status_counts[status] = 1
     output = [f"--- Total Project Progress Report: ---"]
     for key, value in status_counts.items():
         output.append(f"{key}: {value}")
-    easygui.msgbox("\n".join(output), "hi")
+    easygui.msgbox("\n".join(output), "Task Manager - Project Report")
 
         
 def output_user(user_id):
@@ -244,7 +239,6 @@ def output_all_tasks():
 def pre_update_task():
     search_tasks("Edit")
     return
-
 
 def update_task_input(task_id):
     editable_fields = [field for field in task_tags]
@@ -320,40 +314,28 @@ def assign_task_selector(task_id):
     choice = easygui.choicebox(box_msg, box_title, choices)
     if choice == "None (Un-assign Task)":
         unassign_task(task_id)
-    elif choice != None:
-        user_id = choice.split(".")
-        check_if_task_free(user_id[0], task_id)
-    else:
-        return
-
-def unassign_task(task_id):
-    if task_list[task_id]['Assignee'] != 'None':
-        member_id = task_list[task_id]['Assignee']
-        for assigned_tasks in team_members[member_id]['Assigned Tasks']:
-            if assigned_tasks == task_id:
-                team_members[member_id]['Assigned Tasks'].remove(task_id)
-        task_list[task_id]["Assignee"] = "None"
         box_title = "Task Manager - Success"
         box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
         easygui.msgbox(box_msg, box_title)
         output_task(task_id)
+    elif choice != None:
+        user_id = choice.split(".")
+        user_id = user_id[0]
+        unassign_task(task_id)
+        assign_task(task_id, user_id)
+        output_task(task_id)
     else:
-        box_msg = f"Error: Task {task_id}: {task_list[task_id]['Title']} already has no-one assigned to it!"
-        box_title = "Task Manager - Error"
-        easygui.msgbox(box_msg, box_title)
+        return
 
-def check_if_task_free(user_id, task_id):
-    if task_list[task_id]['Assignee'] == "None":
-        loop_iteration = 0
-        for assigned_tasks in team_members[user_id]['Assigned Tasks']:
-            loop_iteration += 1
-            if loop_iteration == len(team_members[user_id]['Assigned Tasks']):
-                assign_task(task_id, user_id)
-                return
-    else:
-        box_msg = f"Error: Task {task_id} {task_list[task_id]['Title']} already has user {task_list[task_id]['Assignee']} assigned to it!"
-        box_title = "Task Manager - Error"
-        easygui.msgbox(box_msg, box_title)
+def unassign_task(task_id):
+    member_id = task_list[task_id]['Assignee']
+    if member_id != None:
+        for assigned_tasks in team_members[member_id]['Assigned Tasks']:
+            if assigned_tasks == task_id:
+                team_members[member_id]['Assigned Tasks'].remove(task_id)
+        task_list[task_id]["Assignee"] = "None"
+    return member_id
+
 
 def assign_task(task_id, user_id):
     team_members[user_id]['Assigned Tasks'].append(task_id)
@@ -406,9 +388,6 @@ def create_new_task():
                     task_id = generate_task_id()
                     task_list[task_id] = new_task
                     assign_task_selector(task_id)
-                    box_title = "Task Manager - Create Task" 
-                    box_msg = "Task sucessfully created!"
-                    easygui.msgbox(box_msg, box_title)
                     output_task(task_id)
 
 
