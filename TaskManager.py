@@ -57,6 +57,7 @@ team_members = {
 }
 
 task_tags = ["Title", "Description","Priority"]
+extra_editable_task_tags = ["Status", "Assignee"]
 status_options = ["In Progress", "Not Started", "Blocked", "Complete"] 
 
 
@@ -242,7 +243,8 @@ def pre_update_task():
 
 def update_task_input(task_id):
     editable_fields = [field for field in task_tags]
-    editable_fields.extend(["Status", "Cancel"])
+    editable_fields.extend(extra_editable_task_tags)
+    editable_fields.append("Cancel")
     box_msg = "Which Field would you like to edit?"
     box_title = "Task Manager - Edit Task"
     field_to_edit = easygui.buttonbox(box_msg, box_title, editable_fields)
@@ -318,22 +320,24 @@ def assign_task_selector(task_id):
         box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
         easygui.msgbox(box_msg, box_title)
         output_task(task_id)
-    elif choice != None:
+    elif choice != None or choice != "Cancel":
         user_id = choice.split(".")
         user_id = user_id[0]
         unassign_task(task_id)
         assign_task(task_id, user_id)
         output_task(task_id)
     else:
-        return
+        return False
 
 def unassign_task(task_id):
     member_id = task_list[task_id]['Assignee']
-    if member_id != None:
+    if member_id != "None":
         for assigned_tasks in team_members[member_id]['Assigned Tasks']:
             if assigned_tasks == task_id:
                 team_members[member_id]['Assigned Tasks'].remove(task_id)
         task_list[task_id]["Assignee"] = "None"
+    else:
+        return True
     return member_id
 
 
@@ -351,8 +355,6 @@ def generate_task_id():
     number_of_tasks = len(task_list) + 1
     task_id = f"T{number_of_tasks}"
     return task_id
-
-
 
 def input_multiple_values(values_to_enter, title):
     box_msg = f"Please input the info to {title}"
@@ -383,12 +385,14 @@ def create_new_task():
                 value = integer_validation(user_input[2], min_value,max_value)
                 if value != True:
                     easygui.msgbox(f"{value}", "Error")
-                    create_new_task()
                 else:
                     task_id = generate_task_id()
                     task_list[task_id] = new_task
-                    assign_task_selector(task_id)
-                    output_task(task_id)
+                    assignne_selection = assign_task_selector(task_id)
+                    if assignne_selection == False:
+                        return
+                    else:
+                        output_task(task_id)
 
 
 def user_menu():
