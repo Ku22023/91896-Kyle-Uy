@@ -261,6 +261,8 @@ def update_task_input(task_id):
         new_value = update_status(task_id)
         if new_value == False:
             return
+    elif field_to_edit == "Assignee":
+        new_value = assign_task_selector(task_id)
     else:
         user_input = input_value(field_to_edit)
         new_value = user_input
