@@ -198,25 +198,10 @@ def output_user(user_id):
     easygui.msgbox("\n".join(output), title=team_members[user_id]["Name"])
     
 def output_task(task_id):
-    options = {
-        "Assign Task to a User": assign_task_selector,
-        "Cancel": exit
-    }
     output = [f"--- {task_id}. {task_list[task_id]['Title']} ---"]
     for key, value in task_list[task_id].items():
         output.append(f"{key}: {value}")
-
-    choices = []
-    for action in options:
-        choices.append(action)
-
-    selection = easygui.buttonbox("\n".join(output), title=task_list[task_id]["Title"], choices=choices)
-    if selection == None or selection == "Cancel":
-        return
-    elif selection == "Assign Task to a User":
-        assign_task_selector(task_id)
-    else:
-        options[selection]()
+    easygui.msgbox("\n".join(output), title=task_list[task_id]["Title"])
 
 
 def output_all_tasks():
@@ -262,7 +247,8 @@ def update_task_input(task_id):
         if new_value == False:
             return
     elif field_to_edit == "Assignee":
-        new_value = assign_task_selector(task_id)
+        assign_task_selector(task_id)
+        return
     else:
         user_input = input_value(field_to_edit)
         new_value = user_input
@@ -274,7 +260,6 @@ def update_task(new_value, task_id, field_to_edit):
         task_list[task_id][field_to_edit] = new_value
         easygui.msgbox(f"{field_to_edit} updated sucessfully.", "Edit Complete")
         output_task(task_id)
-        return
 
 def update_status(task_id):
     box_msg = f"What would you like to set the status of {task_id}: {task_list[task_id]['Title']} to?"
@@ -282,8 +267,9 @@ def update_status(task_id):
     options = status_options
     options.append("Cancel")
     user_input = easygui.buttonbox(box_msg, box_title, options)
-    if user_input == "Cancel" or user_input == None or len(user_input) == 0:
+    if user_input == "Cancel" or user_input == None:
         easygui.msgbox("Edit cancelled. Returning")
+        options.remove("Cancel")
         return False
     else:
         return user_input
@@ -313,22 +299,19 @@ def assign_task_selector(task_id):
     choice = easygui.choicebox(box_msg, box_title, choices)
     if choice == "None (Un-assign Task)":
         unassign_task(task_id)
-        box_title = "Task Manager - Success"
-        box_msg = f"Sucessfully un-assigned task {task_list[task_id]['Title']}"
-        easygui.msgbox(box_msg, box_title)
-        output_task(task_id)
+        return
     elif choice != None:
         user_id = choice.split(".")
         user_id = user_id[0]
         unassign_task(task_id)
         assign_task(task_id, user_id)
-        output_task(task_id)
+        return user_id
     else:
         return False
 
 def unassign_task(task_id):
     member_id = task_list[task_id]['Assignee']
-    if member_id == "None":
+    if member_id == None:
         for assigned_tasks in team_members[member_id]['Assigned Tasks']:
             if assigned_tasks == task_id:
                 team_members[member_id]['Assigned Tasks'].remove(task_id)
