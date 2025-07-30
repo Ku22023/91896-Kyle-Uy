@@ -248,6 +248,7 @@ def update_task_input(task_id):
             return
     elif field_to_edit == "Assignee":
         assign_task_selector(task_id)
+        output_task(task_id)
         return
     else:
         user_input = input_value(field_to_edit)
@@ -309,13 +310,21 @@ def assign_task_selector(task_id):
 
 def unassign_task(task_id):
     member_id = task_list[task_id]['Assignee']
-    if member_id == None:
+    print("------")
+    print("hi")
+    print(member_id)
+    if member_id == "None" or member_id == None:
+        print("Hi 4")
+        return True
+    else:
         for assigned_tasks in team_members[member_id]['Assigned Tasks']:
             if assigned_tasks == task_id:
                 team_members[member_id]['Assigned Tasks'].remove(task_id)
+                print("hi 2")
         task_list[task_id]["Assignee"] = "None"
-    else:
-        return True
+        print(task_id)
+        print(task_list[task_id]["Assignee"])
+        print("hi 3")
     return member_id
 
 
