@@ -119,7 +119,7 @@ def search_tasks(reason_for_search):
     for task_id in task_list:
         for key in task_list[task_id]:
             if key == "Title":
-                choices.append(f"{task_id}. {task_list[task_id]['Title']}")
+               choices.append(f"{task_id}. {task_list[task_id]['Title']}")
     box_msg = f"What task would you like to {reason_for_search}?"
     box_title = "Task Manager - Search"
     choice = easygui.choicebox(box_msg, box_title, choices)
@@ -169,7 +169,7 @@ def search_members_input():
     else:
         return "homepage"
 
-    
+
 #Functions for outputting.
 
 def generate_report():
@@ -203,7 +203,6 @@ def output_task(task_id):
         output.append(f"{key}: {value}")
     easygui.msgbox("\n".join(output), title=task_list[task_id]["Title"])
 
-
 def output_all_tasks():
     output = []
     for task_id, task in task_list.items():
@@ -213,7 +212,6 @@ def output_all_tasks():
                 output.append(f"{key}: {value}")
         output.append("")
     easygui.msgbox("\n".join(output), title="All Tasks")
-
 
 #Functions used for updating/assigning Tasks.
 
@@ -279,6 +277,9 @@ def update_status(task_id):
         options.remove("Cancel")
         return False
     else:
+        if user_input == "Complete":
+            unassign_task(task_id)
+        options.remove("Cancel")
         return user_input
 
 def input_value(field_to_edit):
@@ -306,11 +307,15 @@ def assign_task_selector(task_id):
         unassign_task(task_id)
         return
     elif choice != None:
-        user_id = choice.split(".")
-        user_id = user_id[0]
-        unassign_task(task_id)
-        assign_task(task_id, user_id)
-        return user_id
+        if task_list[task_id]['Status'] != "Complete":
+            user_id = choice.split(".")
+            user_id = user_id[0]
+            unassign_task(task_id)
+            assign_task(task_id, user_id)
+            return user_id
+        else:
+            easygui.msgbox("Error: The task is already complete! Please change the task status to assign this task to a user.", "Task Manager - Error")
+            return False
     else:
         easygui.msgbox("You cancelled selection. Returning to home screen.", "Task Manager - Error")
         return False
