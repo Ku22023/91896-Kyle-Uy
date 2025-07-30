@@ -236,20 +236,26 @@ def update_task_input(task_id):
         min_value = 1
         max_value = 3
         user_input = input_value(field_to_edit)
-        value = integer_validation(user_input, min_value, max_value)
-        if value == True:
-            new_value = user_input
+        if user_input != False:
+            value = integer_validation(user_input, min_value, max_value)
+            if value == True:
+                new_value = user_input
+            else:
+                easygui.msgbox(value, "Error")
+                return
         else:
-            easygui.msgbox(value, "Error")
             return
     elif field_to_edit == "Status":
         new_value = update_status(task_id)
         if new_value == False:
             return
     elif field_to_edit == "Assignee":
-        assign_task_selector(task_id)
-        output_task(task_id)
-        return
+        output = assign_task_selector(task_id)
+        if output != False:
+            output_task(task_id)
+            return
+        else:
+            return
     else:
         user_input = input_value(field_to_edit)
         new_value = user_input
@@ -306,6 +312,7 @@ def assign_task_selector(task_id):
         assign_task(task_id, user_id)
         return user_id
     else:
+        easygui.msgbox("You cancelled selection. Returning to home screen.", "Task Manager - Error")
         return False
 
 def unassign_task(task_id):
@@ -377,6 +384,7 @@ def create_new_task():
                     task_list[task_id] = new_task
                     assignne_selection = assign_task_selector(task_id)
                     if assignne_selection == False:
+                        task_list.pop(task_id)
                         return
                     else:
                         output_task(task_id)
