@@ -274,8 +274,6 @@ def update_status(task_id):
     else:
         return user_input
 
-
-
 def input_value(field_to_edit):
     box_title = "Editing Task"
     box_msg = f"Enter what you would like to change {field_to_edit} to?"
