@@ -64,6 +64,10 @@ status_options = ["In Progress", "Not Started", "Blocked", "Complete"]
 #Validation.
 
 def string_validation(user_input):
+    '''
+    Checks if the value that the user input has anything missing, like
+    if the user has not filled in some values.
+    '''
     box_title = "Error"
     box_message = "Error! You need to fill in all values!"
     if type(user_input) == list:
@@ -79,6 +83,10 @@ def string_validation(user_input):
 
 
 def integer_validation(user_input, min_value, max_value):
+    '''
+    Checks if the user has input an integer, and if the integer fits 
+    withing the minimum and maximum values set by the function.
+    '''
     try:
         user_input = int(user_input)
         if user_input <= min_value -1:
@@ -93,6 +101,10 @@ def integer_validation(user_input, min_value, max_value):
 #Functions used for searching both tasks and users.
 
 def search_selection():
+    '''
+    Creates a menu with 2 buttons, allowing the user to choose what to
+    search for: either for tasks or for users.
+    '''
     options = {
         "Search for a Team Member": search_members,
         "Search for a Task": pre_search_tasks,
@@ -110,11 +122,23 @@ def search_selection():
     options[selection]()
 
 def pre_search_tasks():
+    '''
+    This function allows the program to run an input through the search
+    function, allowing it to specify that it is searching for a task to
+    output, and not a task to edit, as there is no way to have the
+    brackets with the menu, making this function necessary.
+    '''
     user_input = search_tasks("Search")
     if user_input == False:
         return
 
 def search_tasks(reason_for_search):
+    '''
+    This function loops through the task dictionary, grabbing the task
+    ID and task name and puts them together to create a nice choice box
+    with all the tasks, which the user can choose from.
+    It also leads the program to output or edit the selected task.
+    '''
     choices = []
     for task_id in task_list:
         for key in task_list[task_id]:
@@ -134,6 +158,13 @@ def search_tasks(reason_for_search):
     
 
 def search_members():
+    '''
+    This function checks whether the user input the ID of the user they
+    want to search for (for example: 'JSM') or the Name of the user they
+    want to search for (for example: 'John Smith'), and runs the
+    function to check if they exist depending on what is returned and
+    outputs the search.
+    '''
     user_input = search_members_input()
     if user_input == "homepage":
         return
@@ -150,6 +181,13 @@ def search_members():
 
 
 def search_members_dictionary(user_input):
+    '''
+    This function loops through the member dictionary, first checking if
+    the user input an ID, and if it finds an ID it returns the ID to the
+    function above this (search_members), and if it's not an ID it looks
+    through the members dictionary for a name, and returns that name,
+    to be output.
+    '''
     for member_id in team_members:
         if member_id.lower() == user_input.lower():
             return True
@@ -160,6 +198,11 @@ def search_members_dictionary(user_input):
                         return member_id
 
 def search_members_input():
+    '''
+    This function creates an enterbox which creates a user-friendly way
+    for the user to input what user they would like to search for,
+    before passing that value onto other functions.
+    '''
     box_title = "Task Manager - Search"
     box_msg = "Enter the team member's name or ID."
     user_input = easygui.enterbox(box_msg, box_title)
@@ -173,6 +216,17 @@ def search_members_input():
 #Functions for outputting.
 
 def generate_report():
+    '''
+    This function creates a dictionary for every value in "Status
+    Options" and automatically sets them to zero. It then loops through
+    all the tasks, and if it finds a task with a set status, it
+    increases the value of status by one.
+    For example it sets "Not Started" to zero, until it finds a task
+    with that status, and sets "Not Started" to 1.
+    If it finds a status not found in the [status_options] list, it
+    adds that new status to the dictionary and sets it to one, allowing
+    more statuses to be added without it being hard-coded.
+    '''
     status_counts = {}
     for satus_values in status_options:
         status_counts[satus_values] = 0
@@ -187,6 +241,11 @@ def generate_report():
 
         
 def output_user(user_id):
+    '''
+    This function loops through a specific user's ID.
+    It then outputs all of the values it found into a nice readable
+    format.
+    '''
     output = [f"--- {user_id}. {team_members[user_id]['Name']} ---"]
     for key, value in team_members[user_id].items():
         if key == 'Assigned Tasks':
@@ -198,12 +257,22 @@ def output_user(user_id):
     easygui.msgbox("\n".join(output), title=team_members[user_id]["Name"])
     
 def output_task(task_id):
+    '''
+    It loops through the task ID grabbing all its values, then outputs
+    them in a nice, simple way.
+    '''
     output = [f"--- {task_id}. {task_list[task_id]['Title']} ---"]
     for key, value in task_list[task_id].items():
         output.append(f"{key}: {value}")
     easygui.msgbox("\n".join(output), title=task_list[task_id]["Title"])
 
 def output_all_tasks():
+    '''
+    It loops through the task_list dictionary then grabs all the
+    information about each task, (title, description, priority,
+    assignee, and status), then outputs them all in a nice readable
+    format.
+    '''
     output = []
     for task_id, task in task_list.items():
         output.append(f"--- {task_id}. {task['Title']} ---")
