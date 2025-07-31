@@ -206,6 +206,8 @@ def search_members():
     outputs the search.
     '''
     user_searching = True
+    # Prevents the program from returning to the homescreen when the
+    # user types an invalid input.
     while user_searching == True:
         user_input = search_members_input()
         if user_input != None:
@@ -375,6 +377,8 @@ def update_task_input(task_id):
         min_priority = 1
         max_priority = 3
         user_inputting_value = True
+        # Prevents the user from returning to the homescreen when they
+        # they an invalid input.
         while user_inputting_value == True:
             updated_value = input_value(field_to_edit)
             if updated_value == False:
@@ -559,6 +563,8 @@ def input_multiple_values(values_to_enter, title):
     box_msg = f"Please input the info to {title}"
     box_title = title
     user_inputting_values = True
+    # Prevents the user from returning to the homescreen when they type
+    # an invalid input, and just re-opens the multi enter box.
     while user_inputting_values == True:
         user_input = easygui.multenterbox(box_msg,box_title,values_to_enter)
         if user_input != None:
