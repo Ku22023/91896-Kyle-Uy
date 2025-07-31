@@ -205,23 +205,29 @@ def search_members():
     function to check if they exist depending on what is returned and
     outputs the search.
     '''
-    user_input = search_members_input()
-    if user_input != None:
-        member_exists = search_members_dictionary(user_input)
-    # This if statement edits the user input depending on what the user
-    # input. If the user input the team member's name, it would have
-    # to find the team member's ID aswell, but if the user just input
-    # the user's ID, it would just run the output function as it needs
-    # an ID.
-        if member_exists == True:
-            user_id = user_input.upper()
-            output_user(user_id)
-        elif type(member_exists) == str and len(member_exists) == 3:
-            user_id = member_exists
-            output_user(user_id)
+    user_searching = True
+    while user_searching == True:
+        user_input = search_members_input()
+        if user_input != None:
+            member_exists = search_members_dictionary(user_input)
+        # This if statement edits the user input depending on what the user
+        # input. If the user input the team member's name, it would have
+        # to find the team member's ID aswell, but if the user just input
+        # the user's ID, it would just run the output function as it needs
+        # an ID.
+            if member_exists == True:
+                user_id = user_input.upper()
+                output_user(user_id)
+                user_searching = False
+            elif type(member_exists) == str and len(member_exists) == 3:
+                user_id = member_exists
+                output_user(user_id)
+                user_searching = False
+            else:
+                easygui.msgbox("Error: Member does not exist!")
         else:
-            easygui.msgbox("Error: Member does not exist!")
-            search_members()
+            return
+
 
 
 def search_members_dictionary(user_input):
