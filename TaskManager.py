@@ -408,21 +408,13 @@ def assign_task_selector(task_id):
 
 def unassign_task(task_id):
     member_id = task_list[task_id]['Assignee']
-    print("------")
-    print("hi")
-    print(member_id)
     if member_id == "None" or member_id == None:
-        print("Hi 4")
         return True
     else:
         for assigned_tasks in team_members[member_id]['Assigned Tasks']:
             if assigned_tasks == task_id:
                 team_members[member_id]['Assigned Tasks'].remove(task_id)
-                print("hi 2")
         task_list[task_id]["Assignee"] = "None"
-        print(task_id)
-        print(task_list[task_id]["Assignee"])
-        print("hi 3")
     return member_id
 
 
@@ -449,7 +441,7 @@ def input_multiple_values(values_to_enter, title):
     if checked_values == True:
         return user_input
     elif checked_values == "missing":
-        create_new_task()
+        return
 
 def create_new_task():
     min_priority = 1
