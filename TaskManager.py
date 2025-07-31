@@ -124,7 +124,7 @@ def integer_validation(user_input, min_priority, max_priority):
         else:
             return True
     except:
-        return "Please input a number!"
+        return "Please input a number for priority!"
 
 #Functions used for searching for both tasks and users.
 
@@ -414,7 +414,7 @@ def update_status(task_id):
     is able to be changed in the list at the top. This function then
     returns the user input to the main edit_task_input() function.
     '''
-    box_msg = (f"What would you like to set the status of" + 
+    box_msg = (f"What would you like to set the status of " + 
     f"{task_id}: {task_list[task_id]['Title']} to?")
     box_title = "Task Manager - Editing Status"
     options = status_options
@@ -523,7 +523,8 @@ def assign_task(task_id, user_id):
     team_members[user_id]['Assigned Tasks'].append(task_id)
     task_list[task_id]['Assignee'] = user_id
     box_title = "Task Manager - Success"
-    box_msg = f"Sucessfully assigned Task {task_list[task_id]['Title']} to user {team_members[user_id]['Name']}!"
+    box_msg = (f"Sucessfully assigned Task {task_list[task_id]['Title']}"  +
+    f" to user {team_members[user_id]['Name']}!")
     easygui.msgbox(box_msg, box_title)
     return
 
@@ -577,8 +578,8 @@ def create_new_task():
             if field == "Priority":
                 min_priority = 1
                 max_priority = 3
-                validated_integer = integer_validation(user_input[2], min_priority,
-                                            max_priority)
+                validated_integer = integer_validation(user_input[2], 
+                                            min_priority, max_priority)
                 if validated_integer != True:
                     easygui.msgbox(f"{validated_integer}", "Error")
                 else:
@@ -612,10 +613,10 @@ def user_menu():
         box_msg = "Welcome to the Task Manager! Please choose your option."
         box_title = "Task Manager - Home"
         choices = []
-        # This loop loops through the options dictionary that was defined
-        # above and adds the title of the title to a button in the button
-        # box. Then, when an option is selected, it runs the function (key)
-        # ascociated with the title.
+        # This loop loops through the options dictionary that was 
+        # defined above and adds the title of the title to a button in 
+        # the button box. Then, when an option is selected, it runs the 
+        # function (key) ascociated with the title.
         for action in options:
             choices.append(action)
         
