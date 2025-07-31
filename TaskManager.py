@@ -206,20 +206,22 @@ def search_members():
     outputs the search.
     '''
     user_input = search_members_input()
-    member_exists = search_members_dictionary(user_input)
+    if user_input != None:
+        member_exists = search_members_dictionary(user_input)
     # This if statement edits the user input depending on what the user
     # input. If the user input the team member's name, it would have
     # to find the team member's ID aswell, but if the user just input
     # the user's ID, it would just run the output function as it needs
     # an ID.
-    if member_exists == True:
-        user_id = user_input.upper()
-        output_user(user_id)
-    elif type(member_exists) == str and len(member_exists) == 3:
-        user_id = member_exists
-        output_user(user_id)
-    else:
-        easygui.msgbox("Error: Member does not exist!")
+        if member_exists == True:
+            user_id = user_input.upper()
+            output_user(user_id)
+        elif type(member_exists) == str and len(member_exists) == 3:
+            user_id = member_exists
+            output_user(user_id)
+        else:
+            easygui.msgbox("Error: Member does not exist!")
+            search_members()
 
 
 def search_members_dictionary(user_input):
@@ -366,14 +368,17 @@ def update_task_input(task_id):
     if field_to_edit == "Priority":
         min_priority = 1
         max_priority = 3
-        updated_value = input_value(field_to_edit)
-        if updated_value == False:
-            return
-        validated_integer = integer_validation(updated_value, min_priority, 
-                                               max_priority)
-        if validated_integer != True:
-            easygui.msgbox(validated_integer, "Error")
-            return
+        user_inputting_value = True
+        while user_inputting_value == True:
+            updated_value = input_value(field_to_edit)
+            if updated_value == False:
+                return
+            validated_integer = integer_validation(updated_value, min_priority, 
+                                                max_priority)
+            if validated_integer != True:
+                easygui.msgbox(validated_integer, "Error")
+            else:
+                user_inputting_value = False
     # If the user were to select the Status to edit.
     elif field_to_edit == "Status":
         updated_value = update_status(task_id)
@@ -547,12 +552,16 @@ def input_multiple_values(values_to_enter, title):
     '''
     box_msg = f"Please input the info to {title}"
     box_title = title
-    user_input = easygui.multenterbox(box_msg,box_title,values_to_enter)
-    checked_values = string_validation(user_input)
-    if checked_values == True:
-        return user_input
-    elif checked_values == "missing":
-        return
+    user_inputting_values = True
+    while user_inputting_values == True:
+        user_input = easygui.multenterbox(box_msg,box_title,values_to_enter)
+        if user_input != None:
+            checked_values = string_validation(user_input)
+            if checked_values == True:
+                user_inputting_values = False
+                return user_input
+        else:
+            return
 
 def create_new_task():
     '''
@@ -582,6 +591,7 @@ def create_new_task():
                                             min_priority, max_priority)
                 if validated_integer != True:
                     easygui.msgbox(f"{validated_integer}", "Error")
+                    create_new_task()
                 else:
                     task_id = generate_task_id()
                     task_list[task_id] = new_task
