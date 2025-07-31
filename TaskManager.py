@@ -401,9 +401,10 @@ def update_task(updated_value, task_id, field_to_edit):
     dictionary, then output a success message, the edit comes from the
     update_task_input() function.
     '''
-    if updated_value != False:
+    if updated_value != None:
         task_list[task_id][field_to_edit] = updated_value
-        easygui.msgbox(f"{field_to_edit} updated sucessfully.", "Edit Complete")
+        easygui.msgbox(f"{field_to_edit} updated sucessfully.", 
+                       "Edit Complete")
         output_task(task_id)
 
 def update_status(task_id):
@@ -413,8 +414,9 @@ def update_status(task_id):
     is able to be changed in the list at the top. This function then
     returns the user input to the main edit_task_input() function.
     '''
-    box_msg = f"What would you like to set the status of {task_id}: {task_list[task_id]['Title']} to?"
-    box_title = "Task Manager = Editing Status"
+    box_msg = (f"What would you like to set the status of" + 
+    f"{task_id}: {task_list[task_id]['Title']} to?")
+    box_title = "Task Manager - Editing Status"
     options = status_options
     options.append("Cancel")
     user_input = easygui.buttonbox(box_msg, box_title, options)
@@ -425,6 +427,9 @@ def update_status(task_id):
     else:
         if user_input == "Complete":
             unassign_task(task_id)
+        # This is done to prevent the 'Done' option showing up multiple
+        # times when the user goes through the update function multple
+        # times.
         options.remove("Cancel")
         return user_input
 
@@ -454,13 +459,15 @@ def assign_task_selector(task_id):
     assign or un-assign function, with the selected task. It prevents
     the task from being assigned if its status is set to complete.
     '''
-    box_msg = f"What member would you like to assign: \n{task_id}. {task_list[task_id]['Title']}"
+    box_msg = (f"What member would you like to assign:" +
+    f"\n{task_id}. {task_list[task_id]['Title']}\n")
     box_title = "Task Manager - Assigning a Task"
     choices = ["None (Un-assign Task)"]
     for member_id in team_members:
         for key in team_members[member_id]:
             if key == "Name":
-                choices.append(f"{member_id}. {team_members[member_id]['Name']}")
+                choices.append(f"{member_id}. " +
+                               f"{team_members[member_id]['Name']}")
     choice = easygui.choicebox(box_msg, box_title, choices)
     if task_list[task_id]['Status'] != "Complete":
         if choice == "None (Un-assign Task)":
@@ -473,10 +480,15 @@ def assign_task_selector(task_id):
                 assign_task(task_id, user_id)
                 return user_id
         else:
-            easygui.msgbox("You cancelled selection. Returning to home screen.", "Task Manager - Error")
+            box_msg = "You cancelled selection. Returning to home screen."
+            box_title = "Task Manager - Error"
+            easygui.msgbox(box_msg, box_title)
             return False
     else:
-        easygui.msgbox("Error: The task is already complete! Please change the task status to assign this task to a user.", "Task Manager - Error")
+        box_msg = ("Error: The task is already complete! " +  
+        "Please change the task status to assign this task to a user.")
+        box_title = "Task Manager - Error"
+        easygui.msgbox(box_msg, box_title)
         return False
 
 
@@ -487,6 +499,7 @@ def unassign_task(task_id):
     list.
     If the task has nobody assigned to it, it is already un-assigned
     and thus just returns to the previous function.
+    Return True: is done if the task already has nobody assigned to it.
     '''
     member_id = task_list[task_id]['Assignee']
     if member_id == "None" or member_id == None:
@@ -548,9 +561,8 @@ def create_new_task():
     to a team member.
     If anything if invalid or cancelled, it returns to the main menu.
     '''
-    min_priority = 1
-    max_priority = 3
-    user_input = input_multiple_values(values_to_enter=task_tags, title="Task Manager - Create a New Task")
+    title = "Task Manager - Create a New Task"
+    user_input = input_multiple_values(task_tags, title)
     if user_input == None:
         return
     else:
@@ -563,9 +575,12 @@ def create_new_task():
         }
         for field in new_task:
             if field == "Priority":
-                value = integer_validation(user_input[2], min_priority,max_priority)
-                if value != True:
-                    easygui.msgbox(f"{value}", "Error")
+                min_priority = 1
+                max_priority = 3
+                validated_integer = integer_validation(user_input[2], min_priority,
+                                            max_priority)
+                if validated_integer != True:
+                    easygui.msgbox(f"{validated_integer}", "Error")
                 else:
                     task_id = generate_task_id()
                     task_list[task_id] = new_task
