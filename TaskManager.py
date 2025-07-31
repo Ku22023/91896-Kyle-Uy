@@ -82,17 +82,17 @@ def string_validation(user_input):
             return True
 
 
-def integer_validation(user_input, min_value, max_value):
+def integer_validation(user_input, min_priority, max_priority):
     '''
     Checks if the user has input an integer, and if the integer fits 
     withing the minimum and maximum values set by the function.
     '''
     try:
         user_input = int(user_input)
-        if user_input <= min_value -1:
-            return f"Please Choose a number between {min_value} and {max_value}!"
-        elif user_input >= max_value +1:
-            return f"Please Choose a number between {min_value} and {max_value}!"
+        if user_input <= min_priority -1:
+            return f"Please Choose a number between {min_priority} and {max_priority}!"
+        elif user_input >= max_priority +1:
+            return f"Please Choose a number between {min_priority} and {max_priority}!"
         else:
             return True
     except:
@@ -285,6 +285,9 @@ def output_all_tasks():
 #Functions used for updating/assigning Tasks.
 
 def pre_update_task():
+    '''
+    This function was created to
+    '''
     search_tasks("Edit")
     return
 
@@ -300,11 +303,11 @@ def update_task_input(task_id):
         easygui.msgbox("No Field Selected. Edit Cancelled.")
         return
     elif field_to_edit == "Priority":
-        min_value = 1
-        max_value = 3
+        min_priority = 1
+        max_priority = 3
         user_input = input_value(field_to_edit)
         if user_input != False:
-            value = integer_validation(user_input, min_value, max_value)
+            value = integer_validation(user_input, min_priority, max_priority)
             if value == True:
                 new_value = user_input
             else:
@@ -435,8 +438,8 @@ def input_multiple_values(values_to_enter, title):
         create_new_task()
 
 def create_new_task():
-    min_value = 1
-    max_value = 3
+    min_priority = 1
+    max_priority = 3
     user_input = input_multiple_values(values_to_enter=task_tags, title="Task Manager - Create a New Task")
     if user_input == None:
         return
@@ -450,7 +453,7 @@ def create_new_task():
         }
         for field in new_task:
             if field == "Priority":
-                value = integer_validation(user_input[2], min_value,max_value)
+                value = integer_validation(user_input[2], min_priority,max_priority)
                 if value != True:
                     easygui.msgbox(f"{value}", "Error")
                 else:
