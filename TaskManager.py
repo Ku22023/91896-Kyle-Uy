@@ -286,7 +286,7 @@ def output_all_tasks():
 
 def pre_update_task():
     '''
-    This function was created to
+    This function was created to 
     '''
     search_tasks("Edit")
     return
@@ -375,22 +375,24 @@ def assign_task_selector(task_id):
             if key == "Name":
                 choices.append(f"{member_id}. {team_members[member_id]['Name']}")
     choice = easygui.choicebox(box_msg, box_title, choices)
-    if choice == "None (Un-assign Task)":
-        unassign_task(task_id)
-        return
-    elif choice != None:
-        if task_list[task_id]['Status'] != "Complete":
-            user_id = choice.split(".")
-            user_id = user_id[0]
-            unassign_task(task_id)
-            assign_task(task_id, user_id)
-            return user_id
+    if task_list[task_id]['Status'] != "Complete":
+        if choice == "None (Un-assign Task)":
+                unassign_task(task_id)
+                return
+
+        elif choice != None:
+                user_id = choice.split(".")
+                user_id = user_id[0]
+                unassign_task(task_id)
+                assign_task(task_id, user_id)
+                return user_id
         else:
-            easygui.msgbox("Error: The task is already complete! Please change the task status to assign this task to a user.", "Task Manager - Error")
+            easygui.msgbox("You cancelled selection. Returning to home screen.", "Task Manager - Error")
             return False
     else:
-        easygui.msgbox("You cancelled selection. Returning to home screen.", "Task Manager - Error")
+        easygui.msgbox("Error: The task is already complete! Please change the task status to assign this task to a user.", "Task Manager - Error")
         return False
+
 
 def unassign_task(task_id):
     member_id = task_list[task_id]['Assignee']
