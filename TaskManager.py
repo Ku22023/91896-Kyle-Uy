@@ -564,10 +564,20 @@ def input_multiple_values(values_to_enter, title):
         if user_input != None:
             checked_values = string_validation(user_input)
             if checked_values == True:
-                user_inputting_values = False
-                return user_input
+                min_priority = 1
+                max_priority = 3
+                validated_integer = integer_validation(user_input[2], 
+                                            min_priority, max_priority)
+                if validated_integer != True:
+                    easygui.msgbox(f"{validated_integer}", "Error")
+                else:
+                    user_inputting_values = False
+                    return user_input
         else:
             return
+
+
+                    
 
 def create_new_task():
     '''
@@ -589,24 +599,14 @@ def create_new_task():
             "Priority": user_input[2],
             "Status": "Not Started"
         }
-        for field in new_task:
-            if field == "Priority":
-                min_priority = 1
-                max_priority = 3
-                validated_integer = integer_validation(user_input[2], 
-                                            min_priority, max_priority)
-                if validated_integer != True:
-                    easygui.msgbox(f"{validated_integer}", "Error")
-                    create_new_task()
-                else:
-                    task_id = generate_task_id()
-                    task_list[task_id] = new_task
-                    assignne_selection = assign_task_selector(task_id)
-                    if assignne_selection == False:
-                        task_list.pop(task_id)
-                        return
-                    else:
-                        output_task(task_id)
+        task_id = generate_task_id()
+        task_list[task_id] = new_task
+        assignne_selection = assign_task_selector(task_id)
+        if assignne_selection == False:
+            task_list.pop(task_id)
+            return
+        else:
+            output_task(task_id)
 
 
 def user_menu():
