@@ -210,11 +210,11 @@ def search_members():
         user_input = search_members_input()
         if user_input != None:
             member_exists = search_members_dictionary(user_input)
-        # This if statement edits the user input depending on what the user
-        # input. If the user input the team member's name, it would have
-        # to find the team member's ID aswell, but if the user just input
-        # the user's ID, it would just run the output function as it needs
-        # an ID.
+            # This if statement edits the user input depending on what 
+            # the user input. If the user input the team member's name,
+            # it would have to find the team member's ID aswell, but if 
+            # the user just input the user's ID, it would just run the 
+            # output function as it needs an ID.
             if member_exists == True:
                 user_id = user_input.upper()
                 output_user(user_id)
