@@ -1,6 +1,9 @@
 import easygui
 
-task_list = { #Dictionaries
+# Dictionary containing all the lists.
+task_list = { 
+    # Nested Dictionary within the dictionary, allowing smaller values
+    # to be specified.
     "T1": {
         "Title": "Design Homepage",
         "Description": "Create a Mockup of the Homepage",
@@ -38,7 +41,9 @@ task_list = { #Dictionaries
     },
 }
 
+# Dictionary of all the team members
 team_members = {
+    # Nested dictionary to allow more values to be specified.
     "JSM": {
         "Name": "John Smith",
         "Email": "John@techvision.com",
@@ -56,27 +61,39 @@ team_members = {
     },
 }
 
+# Items which are editable in the program, which usually show up as
+# buttons in button-boxes while creating or editing a task.
+# extra_editable_task_tags are in a seperate list because they are not
+# initally ascociated with task creation, only set later on.
 task_tags = ["Title", "Description","Priority"]
 extra_editable_task_tags = ["Status", "Assignee"]
 status_options = ["In Progress", "Not Started", "Blocked", "Complete"] 
 
 
-#Validation.
+#Functions which focus on validating user input.
 
 def string_validation(user_input):
     '''
     Checks if the value that the user input has anything missing, like
     if the user has not filled in some values.
+    Returns:
+        - True if the string is valid and no values are missing.
+        - "missing" if any of the inputs are missing, along with an 
+        error message.
     '''
     box_title = "Error"
     box_message = "Error! You need to fill in all values!"
+    # Handles Validation if the input is sent from a 
+    # multi-enter box (list) type.
     if type(user_input) == list:
         if user_input != None:
-            for singular_value in user_input:
-                if singular_value == "":
+            for looped_user_input in user_input:
+                if looped_user_input == "":
                     easygui.msgbox(box_message, box_title)
                     return "missing"
             return True
+    # Handles Validation if the input is sent from a enter box 
+    # (string) type.
     else:
         if user_input != None:
             return True
@@ -86,19 +103,30 @@ def integer_validation(user_input, min_priority, max_priority):
     '''
     Checks if the user has input an integer, and if the integer fits 
     withing the minimum and maximum values set by the function.
+    Returns:
+        - True if the user input is valid (is an integer and falls 
+        between the minimum and maximum range.)
+        - Please Choose a number between {min_priority} and 
+        {max_priority}!" is if the user input a number which is not
+        inbetween the minimum and maximum range
+        - "Please input a number!" if the user input a string or other
+        types of data types.
     '''
     try:
+        # Checks if the user input an integer.
+        # Then if it did, compares the integer with the set minimum and
+        # maximum values.
         user_input = int(user_input)
-        if user_input <= min_priority -1:
-            return f"Please Choose a number between {min_priority} and {max_priority}!"
-        elif user_input >= max_priority +1:
-            return f"Please Choose a number between {min_priority} and {max_priority}!"
+        if user_input <= min_priority -1 or user_input >= \
+        max_priority +1:
+            return (f"Please Choose a number between {min_priority} " +
+            f"and {max_priority}!")
         else:
             return True
     except:
         return "Please input a number!"
 
-#Functions used for searching both tasks and users.
+#Functions used for searching for both tasks and users.
 
 def search_selection():
     '''
@@ -113,6 +141,10 @@ def search_selection():
     box_msg = "Please select what you would like to search!"
     box_title = "Task Manager - Search"
     choices = []
+    # This loop loops through the options dictionary that was defined
+    # above and adds the title of the title to a button in the button
+    # box. Then, when an option is selected, it runs the function (key)
+    # ascociated with the title.
     for action in options:
         choices.append(action)
 
@@ -120,6 +152,7 @@ def search_selection():
     if selection == None or selection == "Cancel":
         return
     options[selection]()
+
 
 def pre_search_tasks():
     '''
@@ -132,6 +165,7 @@ def pre_search_tasks():
     if user_input == False:
         return
 
+
 def search_tasks(reason_for_search):
     '''
     This function loops through the task dictionary, grabbing the task
@@ -140,15 +174,21 @@ def search_tasks(reason_for_search):
     It also leads the program to output or edit the selected task.
     '''
     choices = []
+    # This loop loops through the task list, grabbing both the ID and
+    # title of each task, appending it to be displayed in a list the
+    # user can choose from.
     for task_id in task_list:
         for key in task_list[task_id]:
             if key == "Title":
                choices.append(f"{task_id}. {task_list[task_id]['Title']}")
     box_msg = f"What task would you like to {reason_for_search}?"
     box_title = "Task Manager - Search"
-    choice = easygui.choicebox(box_msg, box_title, choices)
-    if choice != None:
-        task_id = choice.split(".")
+    user_input = easygui.choicebox(box_msg, box_title, choices)
+    if user_input != None:
+        # Splits the task ID from the combined display name with ID, and
+        # only running the ID through the functions listed below, as
+        # the input is displayed as 'T1. Design Homepage'.
+        task_id = user_input.split(".")
         if reason_for_search == "Search":
             output_task(task_id[0])
         elif reason_for_search == "Edit":
@@ -166,18 +206,20 @@ def search_members():
     outputs the search.
     '''
     user_input = search_members_input()
-    if user_input == "homepage":
-        return
+    member_exists = search_members_dictionary(user_input)
+    # This if statement edits the user input depending on what the user
+    # input. If the user input the team member's name, it would have
+    # to find the team member's ID aswell, but if the user just input
+    # the user's ID, it would just run the output function as it needs
+    # an ID.
+    if member_exists == True:
+        user_id = user_input.upper()
+        output_user(user_id)
+    elif type(member_exists) == str and len(member_exists) == 3:
+        user_id = member_exists
+        output_user(user_id)
     else:
-        member_exists = search_members_dictionary(user_input)
-        if member_exists == True:
-            user_id = user_input.upper()
-            output_user(user_id)
-        elif type(member_exists) == str and len(member_exists) == 3:
-            user_id = member_exists
-            output_user(user_id)
-        else:
-            easygui.msgbox("Error: Member does not exist!")
+        easygui.msgbox("Error: Member does not exist!")
 
 
 def search_members_dictionary(user_input):
@@ -194,8 +236,10 @@ def search_members_dictionary(user_input):
         else:
             for member_value in team_members[member_id]:
                 if member_value == "Name":
-                    if team_members[member_id][member_value].lower() == user_input.lower():
+                    if team_members[member_id][member_value].lower() \
+                    == user_input.lower():
                         return member_id
+
 
 def search_members_input():
     '''
@@ -210,7 +254,7 @@ def search_members_input():
     if validation == True:
         return user_input
     else:
-        return "homepage"
+        return
 
 
 #Functions for outputting.
@@ -228,8 +272,10 @@ def generate_report():
     more statuses to be added without it being hard-coded.
     '''
     status_counts = {}
+    # Loops through all the pre-set status values and sets them to zero.
     for satus_values in status_options:
         status_counts[satus_values] = 0
+    # Loops through all the tasks and finds their statuses.
     for task_id in task_list:
         status = task_list[task_id]['Status']
         if status in status_counts:
@@ -239,10 +285,11 @@ def generate_report():
         output.append(f"{key}: {value}")
     easygui.msgbox("\n".join(output), "Task Manager - Project Report")
 
-        
+
 def output_user(user_id):
     '''
-    This function loops through a specific user's ID.
+    This function loops through a specific user's ID, grabbing all the
+    information inside of it.
     It then outputs all of the values it found into a nice readable
     format.
     '''
@@ -251,11 +298,13 @@ def output_user(user_id):
         if key == 'Assigned Tasks':
             output.append("Assigned Tasks:")
             for assigned_task in value:
-                output.append(f"- {assigned_task}. {task_list[assigned_task]['Title']}")
+                output.append(f"- {assigned_task}." + 
+                f" {task_list[assigned_task]['Title']}")
         else:
             output.append(f"{key}: {value}")
     easygui.msgbox("\n".join(output), title=team_members[user_id]["Name"])
-    
+
+
 def output_task(task_id):
     '''
     It loops through the task ID grabbing all its values, then outputs
@@ -311,47 +360,59 @@ def update_task_input(task_id):
     if field_to_edit == "Cancel" or field_to_edit == None:
         easygui.msgbox("No Field Selected. Edit Cancelled.")
         return
-    elif field_to_edit == "Priority":
+    
+    updated_value = None
+    # If the user were to select Priority to edit.
+    if field_to_edit == "Priority":
         min_priority = 1
         max_priority = 3
-        user_input = input_value(field_to_edit)
-        if user_input != False:
-            value = integer_validation(user_input, min_priority, max_priority)
-            if value == True:
-                new_value = user_input
-            else:
-                easygui.msgbox(value, "Error")
-                return
-        else:
+        updated_value = input_value(field_to_edit)
+        if updated_value == False:
             return
+        validated_integer = integer_validation(updated_value, min_priority, 
+                                               max_priority)
+        if validated_integer != True:
+            easygui.msgbox(validated_integer, "Error")
+            return
+    # If the user were to select the Status to edit.
     elif field_to_edit == "Status":
-        new_value = update_status(task_id)
-        if new_value == False:
+        updated_value = update_status(task_id)
+        if updated_value == False:
             return
+    # If the user were to select the Assignee to edit.
     elif field_to_edit == "Assignee":
-        output = assign_task_selector(task_id)
-        if output != False:
-            output_task(task_id)
+        updated_value = assign_task_selector(task_id)
+        if updated_value == False:
             return
-        else:
-            return
+        output_task(task_id)
+    # If the user were to select the Title or the Description to edit.
     else:
         user_input = input_value(field_to_edit)
-        new_value = user_input
-    update_task(new_value, task_id, field_to_edit)
+        if user_input == False:
+            return
+        updated_value = user_input
+    if updated_value != None:
+        update_task(updated_value, task_id, field_to_edit)
+
         
-        
-def update_task(new_value, task_id, field_to_edit):
+def update_task(updated_value, task_id, field_to_edit):
     '''
     This function is used to actually change the value in the
-    dictionary, then output a success message.
+    dictionary, then output a success message, the edit comes from the
+    update_task_input() function.
     '''
-    if new_value != False:
-        task_list[task_id][field_to_edit] = new_value
+    if updated_value != False:
+        task_list[task_id][field_to_edit] = updated_value
         easygui.msgbox(f"{field_to_edit} updated sucessfully.", "Edit Complete")
         output_task(task_id)
 
 def update_status(task_id):
+    '''
+    This function creates a menu of buttons which allow the user to
+    change the status of the selected task. The list of editable tasks
+    is able to be changed in the list at the top. This function then
+    returns the user input to the main edit_task_input() function.
+    '''
     box_msg = f"What would you like to set the status of {task_id}: {task_list[task_id]['Title']} to?"
     box_title = "Task Manager = Editing Status"
     options = status_options
@@ -368,6 +429,13 @@ def update_status(task_id):
         return user_input
 
 def input_value(field_to_edit):
+    '''
+    As this is the only place where user's input a single value, it is
+    used for the edit function. It can be used to update the title or
+    description. It calls the validation function to ensure that the
+    text was input and if it was, returns the text to the main
+    edit_task_input() function.
+    '''
     box_title = "Editing Task"
     box_msg = f"Enter what you would like to change {field_to_edit} to?"
     user_input = easygui.enterbox(box_msg, box_title)
@@ -380,6 +448,12 @@ def input_value(field_to_edit):
         return user_input
 
 def assign_task_selector(task_id):
+    '''
+    This creates a menu out of all the users, in a choicebox, and
+    allows the user to select one. The selected user then goes to an
+    assign or un-assign function, with the selected task. It prevents
+    the task from being assigned if its status is set to complete.
+    '''
     box_msg = f"What member would you like to assign: \n{task_id}. {task_list[task_id]['Title']}"
     box_title = "Task Manager - Assigning a Task"
     choices = ["None (Un-assign Task)"]
@@ -407,6 +481,13 @@ def assign_task_selector(task_id):
 
 
 def unassign_task(task_id):
+    '''
+    Checks if the task has anybody assigned to it, and if it does then
+    it removes assigned user, then removes the task from their task
+    list.
+    If the task has nobody assigned to it, it is already un-assigned
+    and thus just returns to the previous function.
+    '''
     member_id = task_list[task_id]['Assignee']
     if member_id == "None" or member_id == None:
         return True
@@ -419,6 +500,13 @@ def unassign_task(task_id):
 
 
 def assign_task(task_id, user_id):
+    '''
+    This function assigns a specified member to a specific task, and
+    updates both the task_list dictionary and team_members dictionary.
+    It changes the assignee of the task_list dictionary to the selected
+    user, and changes the team_members dictionary by adding the task
+    to their task list.
+    '''
     team_members[user_id]['Assigned Tasks'].append(task_id)
     task_list[task_id]['Assignee'] = user_id
     box_title = "Task Manager - Success"
@@ -429,11 +517,20 @@ def assign_task(task_id, user_id):
 #Functions used for adding Tasks.
 
 def generate_task_id():
+    '''
+    Grabs the number of tasks and increases it by one, to create a new
+    unique ID.
+    '''
     number_of_tasks = len(task_list) + 1
     task_id = f"T{number_of_tasks}"
     return task_id
 
 def input_multiple_values(values_to_enter, title):
+    '''
+    Creates a multi-enter box and sends the values that the user
+    inputs to be validated, and check if there is any missing
+    information, if not, the function returns to the home page.
+    '''
     box_msg = f"Please input the info to {title}"
     box_title = title
     user_input = easygui.multenterbox(box_msg,box_title,values_to_enter)
@@ -444,6 +541,13 @@ def input_multiple_values(values_to_enter, title):
         return
 
 def create_new_task():
+    '''
+    Guides the user through the task creation process, by asking for the
+    Title, Description, and Priority, then validates those values, then
+    generates a unique task ID, then allows the user to assign the task
+    to a team member.
+    If anything if invalid or cancelled, it returns to the main menu.
+    '''
     min_priority = 1
     max_priority = 3
     user_input = input_multiple_values(values_to_enter=task_tags, title="Task Manager - Create a New Task")
@@ -474,6 +578,12 @@ def create_new_task():
 
 
 def user_menu():
+    '''
+    Displays the main menu of the Task Manager Program. It allows the
+    user to choose from a list of items, and is running on a loop so
+    that if nothing else if being shown, the main menu will show, which
+    prevents the program from randomly closing.
+    '''
     options = {
         "Add a New Task": create_new_task,
         "Update a Task": pre_update_task,
@@ -487,6 +597,10 @@ def user_menu():
         box_msg = "Welcome to the Task Manager! Please choose your option."
         box_title = "Task Manager - Home"
         choices = []
+        # This loop loops through the options dictionary that was defined
+        # above and adds the title of the title to a button in the button
+        # box. Then, when an option is selected, it runs the function (key)
+        # ascociated with the title.
         for action in options:
             choices.append(action)
         
