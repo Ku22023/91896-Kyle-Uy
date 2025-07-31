@@ -286,12 +286,21 @@ def output_all_tasks():
 
 def pre_update_task():
     '''
-    This function was created to 
+    This function allows the program to run an input through the search
+    function, allowing it to specify that it is searching for a task to
+    edit, and not a task to output, as there is no way to have the
+    brackets with the menu, making this function necessary.
     '''
     search_tasks("Edit")
     return
 
 def update_task_input(task_id):
+    '''
+    This function grabs the list provided to create a menu using those
+    options, then outputs them all and checks what the user input then
+    rerouts the user to a specific edit function based on the option
+    that they chose.
+    '''
     editable_fields = [field for field in task_tags]
     editable_fields.extend(extra_editable_task_tags)
     editable_fields.append("Cancel")
@@ -333,6 +342,10 @@ def update_task_input(task_id):
         
         
 def update_task(new_value, task_id, field_to_edit):
+    '''
+    This function is used to actually change the value in the
+    dictionary, then output a success message.
+    '''
     if new_value != False:
         task_list[task_id][field_to_edit] = new_value
         easygui.msgbox(f"{field_to_edit} updated sucessfully.", "Edit Complete")
@@ -379,7 +392,6 @@ def assign_task_selector(task_id):
         if choice == "None (Un-assign Task)":
                 unassign_task(task_id)
                 return
-
         elif choice != None:
                 user_id = choice.split(".")
                 user_id = user_id[0]
