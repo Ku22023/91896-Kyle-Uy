@@ -1,9 +1,7 @@
 import easygui
 
-# Dictionary containing all the lists.
+# Dictionary containing all the tasks.
 task_list = { 
-    # Nested Dictionary within the dictionary, allowing smaller values
-    # to be specified.
     "T1": {
         "Title": "Design Homepage",
         "Description": "Create a Mockup of the Homepage",
@@ -43,7 +41,6 @@ task_list = {
 
 # Dictionary of all the team members
 team_members = {
-    # Nested dictionary to allow more values to be specified.
     "JSM": {
         "Name": "John Smith",
         "Email": "John@techvision.com",
