@@ -1,5 +1,6 @@
 import easygui
 
+
 # Dictionary containing all the tasks.
 task_list = { 
     "T1": {
