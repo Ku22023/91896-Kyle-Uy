@@ -383,8 +383,8 @@ def update_task_input(task_id):
             updated_value = input_value(field_to_edit)
             if updated_value == False:
                 return
-            validated_integer = integer_validation(updated_value, min_priority, 
-                                                max_priority)
+            validated_integer = integer_validation(updated_value,
+                                                   min_priority, max_priority)
             if validated_integer != True:
                 easygui.msgbox(validated_integer, "Error")
             else:
@@ -432,6 +432,8 @@ def update_status(task_id):
     box_msg = (f"What would you like to set the status of " + 
     f"{task_id}: {task_list[task_id]['Title']} to?")
     box_title = "Task Manager - Editing Status"
+    # Sets the options the user can choose to the list defined near the
+    # top of the program.
     options = status_options
     options.append("Cancel")
     user_input = easygui.buttonbox(box_msg, box_title, options)
